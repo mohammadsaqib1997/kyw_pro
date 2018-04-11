@@ -1,5 +1,5 @@
 <template lang="pug">
-    div
+    div.container-fluid
       .row
         .col-md-3
             .form-group
@@ -104,7 +104,7 @@ export default {
       });
       if (searches.length > 0 && searches[0] !== "") {
         let v_rows = {};
-        $rows.addClass("hidden");
+        $rows.addClass("d-none");
         $rows.each(function(row_ind) {
           const $row = $(this);
           const columns = $row.find("td");
@@ -152,22 +152,22 @@ export default {
               for (let s_ind in c_val) {
                 find_s_row[s_ind] = true;
                 if (val.srh_length === Object.keys(find_s_row).length) {
-                  $rows.eq(key).removeClass("hidden");
+                  $rows.eq(key).removeClass("d-none");
                   continue row_loop;
                 }
               }
             } else {
               if (!_.isEmpty(c_val)) {
-                $rows.eq(key).removeClass("hidden");
+                $rows.eq(key).removeClass("d-none");
                 break columns;
               }
             }
           }
         }
       } else {
-        $rows.removeClass("hidden");
+        $rows.removeClass("d-none");
       }
-      self.pagination_create($rows.not(".hidden"));
+      self.pagination_create($rows.not(".d-none"));
     },
     pagination_create(rows) {
       const self = this;

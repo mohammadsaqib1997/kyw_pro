@@ -124,6 +124,14 @@ export default {
         {
           title: "Drivers",
           link: "/drivers"
+        },
+        {
+          title: "Schools",
+          link: "/schools"
+        },
+        {
+          title: "Students",
+          link: "/students"
         }
       ]
     };

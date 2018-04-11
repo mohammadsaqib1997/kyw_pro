@@ -35,6 +35,7 @@ export default {
       let res = await self.$store.dispatch("authCheck");
       
       if (res != null && self.$route.name == "login") {
+        await self.$store.dispatch("userDataLoad");
         self.$router.push("/");
       } else if (res == null && self.$route.name != "login") {
         self.$router.push("/login");
