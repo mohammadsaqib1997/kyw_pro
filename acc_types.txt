@@ -1,0 +1,6 @@
+account types
+
+0 means driver
+1 means school
+2 means student
+3 means parent
