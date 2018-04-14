@@ -1,5 +1,5 @@
 <template lang="pug">
-  div(v-if="!loading")
+  div
     nav-comp
     nuxt
 </template>
@@ -13,7 +13,6 @@ export default {
   },
   computed: {
     ...mapState({
-      loading: "page_loading",
       user: "user"
     })
   },

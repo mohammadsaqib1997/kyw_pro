@@ -1,6 +1,8 @@
 <template lang="pug">
-    .loading-page.z-1(v-if="loading")
-        h4 Loading...
+    .loading-page(v-if="loading")
+      .spinner
+        .dot1
+        .dot2
 </template>
 
 <style scoped>
@@ -10,46 +12,97 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgb(56, 56, 56);
+  z-index: 999;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
   text-align: center;
-  padding-top: 200px;
-  font-size: 30px;
-  font-family: sans-serif;
+
+  -webkit-animation: sk-rotate 2s infinite linear;
+  animation: sk-rotate 2s infinite linear;
+}
+
+.dot1,
+.dot2 {
+  width: 60%;
+  height: 60%;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  background-color: #9c9c9c;
+  border-radius: 100%;
+
+  -webkit-animation: sk-bounce 2s infinite ease-in-out;
+  animation: sk-bounce 2s infinite ease-in-out;
+}
+
+.dot2 {
+  top: auto;
+  bottom: 0;
+  -webkit-animation-delay: -1s;
+  animation-delay: -1s;
+}
+
+@-webkit-keyframes sk-rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes sk-rotate {
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes sk-bounce {
+  0%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  50% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes sk-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
 }
 </style>
 
 <script>
-import { mapState } from "vuex";
-import { auth } from "~/services/fireinit.js";
 export default {
-  computed: {
-    ...mapState({
-      loading: "page_loading"
-    })
+  data() {
+    return {
+      loading: true
+    }
   },
   mounted() {
     const self = this;
     self.$nextTick(async () => {
       self.$nuxt.$loading.start();
-
-      let res = await self.$store.dispatch("authCheck");
-      
-      if (res != null && self.$route.name == "login") {
-        await self.$store.dispatch("userDataLoad");
-        self.$router.push("/");
-      } else if (res == null && self.$route.name != "login") {
-        self.$router.push("/login");
-      }
-
-      await setTimeout(() => self.$nuxt.$loading.finish(), 1500);
+      await setTimeout(() => self.$nuxt.$loading.finish(), 500);
     });
   },
   methods: {
     start() {
-      this.$store.commit("setPageLoading", true);
+      this.loading = true
     },
     finish() {
-      this.$store.commit("setPageLoading", false);
+      this.loading = false
     }
   }
 };

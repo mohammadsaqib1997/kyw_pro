@@ -50,9 +50,7 @@ export default {
         self.form.loading = true;
         auth
           .signInWithEmailAndPassword(self.email, self.password)
-          .then(async () => {
-            await self.$store.dispatch('autoSignIn', auth.currentUser);
-            await self.$store.dispatch('userDataLoad');
+          .then(() => {
             self.form.loading = false;
             self.$router.push("/");
           })

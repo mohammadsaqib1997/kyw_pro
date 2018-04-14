@@ -2,7 +2,6 @@ import { auth, DB } from '@/services/fireinit.js'
 
 
 export const state = () => ({
-    page_loading: true,
     user: null,
     userData: null
 })
@@ -14,9 +13,6 @@ export const getters = {
 }
 
 export const mutations = {
-    setPageLoading: (state, payload) => {
-        state.page_loading = payload
-    },
     setUser: (state, payload) => {
         state.user = payload
     },
@@ -32,17 +28,23 @@ export const actions = {
 
     userDataLoad: ({ commit, state }) => {
         return new Promise((resolve, reject) => {
-            DB.ref('Users').child(state.user.uid).once('value', snap => {
-                commit('setUserData', snap.val())
+            if(state.user) {
+                DB.ref('Users').child(state.user.uid).once('value', snap => {
+                    commit('setUserData', snap.val())
+                    resolve()
+                })
+            }else{
+                commit('setUserData', null)
                 resolve()
-            })
+            }
         })
     },
 
-    authCheck: ({ dispatch }) => {
+    authSet: ({ dispatch }) => {
         return new Promise((resolve, reject) => {
-            auth.onAuthStateChanged(user => {
-                dispatch('autoSignIn', user)
+            auth.onAuthStateChanged(async user => {
+                await dispatch('autoSignIn', user)
+                await dispatch('userDataLoad')
                 resolve(user)
             })
         })

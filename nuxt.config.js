@@ -22,6 +22,7 @@ module.exports = {
   },
   mode: 'spa',
   loading: '~/components/loading.vue',
+  loadingIndicator: '~/assets/loadingIndicator.html',
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {
