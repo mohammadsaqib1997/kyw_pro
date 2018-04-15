@@ -8,6 +8,9 @@
                 li.breadcrumb-item.active Schools
 
             .card
+                .card-header
+                    nuxt-link.btn.btn-sm.btn-primary(to="/schools/create")
+                        | Create School
                 .card-body.px-0
                     .table-responsive
                         .text-center.my-2(v-if='fetch.schools.loading')
@@ -36,8 +39,9 @@
 import { DB } from "~/services/fireinit.js";
 import tableComp from "~/components/table_comp.vue";
 export default {
+  middleware: "accTypeRestrict",
   components: {
-    'table_comp': tableComp
+    table_comp: tableComp
   },
   created() {
     const self = this;
@@ -46,17 +50,17 @@ export default {
       .equalTo(1)
       .once("value", function(snap) {
         self.fetch.schools.data = _.values(snap.val());
-        self.fetch.schools.loading = false
+        self.fetch.schools.loading = false;
       });
   },
   data() {
     return {
-        fetch: {
-            schools: {
-                loading: true,
-                data: []
-            }
+      fetch: {
+        schools: {
+          loading: true,
+          data: []
         }
+      }
     };
   }
 };

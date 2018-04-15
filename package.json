@@ -16,7 +16,8 @@
     "firebase": "^4.12.1",
     "lodash": "^4.17.5",
     "nuxt": "^1.0.0",
-    "pug": "^2.0.3"
+    "pug": "^2.0.3",
+    "simple-vue-validator": "^0.15.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",

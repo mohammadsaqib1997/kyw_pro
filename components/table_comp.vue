@@ -1,5 +1,5 @@
 <template lang="pug">
-    div.container-fluid
+    div.container-fluid.py-1
       .row
         .col-md-3
             .form-group

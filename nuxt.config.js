@@ -23,6 +23,7 @@ module.exports = {
   mode: 'spa',
   loading: '~/components/loading.vue',
   loadingIndicator: '~/assets/loadingIndicator.html',
+  plugins: ['~/plugins/s-vue-validator.js'],
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {
