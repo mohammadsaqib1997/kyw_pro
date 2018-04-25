@@ -12,7 +12,7 @@
                 input.cusCheckBox(type='radio' v-model="r_radio_btn" value="and")
                 | &nbsp;&nbsp;AND
                   
-      table.table.table-hover.table-bordered.table-click(ref='table')
+      table.table.table-hover.table-click(ref='table', :class="classes")
           thead
               slot(name="thead")
           tbody
@@ -37,6 +37,10 @@ import _ from "lodash";
 export default {
   name: "tabel_comp",
   props: {
+    classes: {
+      type: String,
+      default: ""
+    },
     per_page: {
       type: Number,
       default: 10
