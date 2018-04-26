@@ -8,6 +8,9 @@
                 li.breadcrumb-item.active Students
 
             .card
+                .card-header
+                    nuxt-link.btn.btn-sm.btn-primary(to="/students/create")
+                        | Create Student
                 .card-body.px-0
                     .table-responsive
                         .text-center.my-2(v-if='fetch.students.loading')
@@ -15,7 +18,7 @@
                         h3.text-center.my-2(v-if='!fetch.students.loading && fetch.students.data.length === 0')
                             | No Data Found!
                         template(v-if='!fetch.students.loading && fetch.students.data.length > 0')
-                            table_comp(v-bind:per_page="10")
+                            table_comp(v-bind:per_page="10" classes="table-sm")
                                 template(slot="thead")
                                     tr
                                         th S.No#
@@ -30,7 +33,7 @@
                                         td {{ item.email }}
                                         td {{ item.studentId }}
                                         td
-                                          nuxt-link.btn.btn-sm.btn-info.text-white(v-bind:to="'/students/edit/'+item.id")
+                                          nuxt-link.btn.btn-sm.btn-primary.text-white(v-bind:to="'/students/update/'+item.id")
                                             i.fa.fa-edit
 
 
