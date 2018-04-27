@@ -4,9 +4,9 @@
             //- Breadcrumbs
             ol.breadcrumb
                 li.breadcrumb-item
-                    nuxt-link(to="/") Dashboard
+                    nuxt-link(to="/admin") Dashboard
                 li.breadcrumb-item
-                    nuxt-link(to="/schools") Schools
+                    nuxt-link(to="/admin/schools") Schools
                 li.breadcrumb-item.active Create New School
 
             .card

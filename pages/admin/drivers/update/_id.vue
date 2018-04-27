@@ -4,10 +4,10 @@
             //- Breadcrumbs
             ol.breadcrumb
                 li.breadcrumb-item
-                    nuxt-link(to="/") Dashboard
+                    nuxt-link(to="/admin") Dashboard
                 li.breadcrumb-item
-                    nuxt-link(to="/drivers") Drivers
-                li.breadcrumb-item.active Create New Driver
+                    nuxt-link(to="/admin/drivers") Drivers
+                li.breadcrumb-item.active Update Driver
 
             .card
                 .card-body
@@ -53,32 +53,54 @@
                         .form-group
                             button.btn.btn-primary(v-if="form.loading" disabled)
                                 i.fa.fa-refresh.fa-spin
-                            button.btn.btn-primary(v-else) Create
+                            button.btn.btn-primary(v-else) Update
 </template>
+
 <script>
 import firebase, { DB } from "~/services/fireinit.js";
 import _ from "lodash";
+
 import Promise from "bluebird";
 import SimpleVueValidation from "simple-vue-validator";
 const Validator = SimpleVueValidation.Validator;
 export default {
   middleware: "accTypeRestrict",
-  async asyncData({ params }, callback) {
-    let school_snap = await DB.ref("Users")
-      .orderByChild("accType")
-      .equalTo(1)
-      .once("value");
+  async asyncData({ params, redirect }, callback) {
+    await DB.ref("Users")
+      .child(params.id)
+      .once("value", async snap => {
+        if (snap.val() !== null) {
+          let school_snap = await DB.ref("Users")
+            .orderByChild("accType")
+            .equalTo(1)
+            .once("value");
 
-    let dataMap = await Promise.all(
-      _.map(school_snap.val(), async o => {
-        return {
-          id: o.id,
-          name: o.schoolName
-        };
-      })
-    );
+          let dataMap = await Promise.all(
+            _.map(school_snap.val(), async o => {
+              return {
+                id: o.id,
+                name: o.schoolName
+              };
+            })
+          );
 
-    callback(null, { schools: dataMap });
+          callback(null, {
+            schools: dataMap,
+            update_id: params.id,
+
+            name: snap.val().driverName,
+            cnic: snap.val().cnic,
+            license: snap.val().license,
+            model: snap.val().model,
+            reg_number: snap.val().regNumber,
+            sel_school: snap.val().school,
+            email: snap.val().email,
+            password: snap.val().pass
+          });
+        } else {
+          redirect("/drivers");
+        }
+      });
   },
   data() {
     return {
@@ -89,6 +111,7 @@ export default {
       },
       schools: [],
 
+      update_id: "",
       name: "",
       cnic: "",
       license: "",
@@ -134,7 +157,8 @@ export default {
     sel_school: value => {
       return Validator.value(value).required();
     },
-    email: value => {
+    email: function(value) {
+      const self = this;
       return Validator.value(value)
         .required()
         .email()
@@ -146,7 +170,11 @@ export default {
                 .orderByChild("email")
                 .equalTo(value)
                 .once("value");
-              if (snap.val() !== null) {
+              if (
+                _.find(snap.toJSON(), o => {
+                  return o.id !== self.update_id;
+                })
+              ) {
                 return "Already taken!";
               }
             });
@@ -168,14 +196,11 @@ export default {
       self.form.err = "";
       this.$validate().then(function(success) {
         if (success) {
-          let pushRef = DB.ref("Users").push();
-          pushRef.set(
+          DB.ref("Users/" + self.update_id).update(
             {
-              accType: 0,
               email: self.email,
-              id: pushRef.key,
               pass: self.password,
-              createdAt: firebase.database.ServerValue.TIMESTAMP,
+              updatedAt: firebase.database.ServerValue.TIMESTAMP,
               cnic: self.cnic,
               driverName: self.name,
               license: self.license,
@@ -188,8 +213,7 @@ export default {
                 self.form.err = err.message;
                 self.form.loading = false;
               } else {
-                self.resetForm();
-                self.form.suc = "Successfully created driver.";
+                self.form.suc = "Successfully updated driver.";
                 self.form.loading = false;
                 setTimeout(() => {
                   self.form.suc = "";
@@ -201,23 +225,8 @@ export default {
           self.form.loading = false;
         }
       });
-    },
-    resetForm() {
-      const self = this;
-
-      self.name = "";
-      self.email = "";
-      self.password = "12345678";
-      self.cnic = "";
-      self.license = "";
-      self.model = "";
-      self.reg_number = "";
-      self.sel_school = "";
-
-      self.validation.reset();
     }
   }
 };
 </script>
-
 

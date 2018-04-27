@@ -4,10 +4,11 @@
             //- Breadcrumbs
             ol.breadcrumb
                 li.breadcrumb-item
-                    nuxt-link(to="/") Dashboard
+                    nuxt-link(to="/admin") Dashboard
                 li.breadcrumb-item
-                    nuxt-link(to="/students") Students
-                li.breadcrumb-item.active Create New Student
+                    nuxt-link(to="/admin/students") Students
+                li.breadcrumb-item.active Select Student
+
             .card
                 .card-body
                     p.text-danger(v-if="form.err && form.err !== ''") {{ form.err }}
@@ -46,51 +47,71 @@
                         .form-group
                             button.btn.btn-primary(v-if="form.loading" disabled)
                                 i.fa.fa-refresh.fa-spin
-                            button.btn.btn-primary(v-else) Create
+                            button.btn.btn-primary(v-else) Update
+                    
+
+
 </template>
 
 <script>
 import firebase, { DB } from "~/services/fireinit.js";
+import _ from "lodash";
 
 import Promise from "bluebird";
 import SimpleVueValidation from "simple-vue-validator";
 const Validator = SimpleVueValidation.Validator;
 
 export default {
-  async asyncData({ params }, callback) {
-    let school_snap = await DB.ref("Users")
-      .orderByChild("accType")
-      .equalTo(1)
-      .once("value");
+  async asyncData({ params, redirect }, callback) {
+    await DB.ref("Users")
+      .child(params.id)
+      .once("value", async snap => {
+        if (snap.val() !== null) {
+          let school_snap = await DB.ref("Users")
+            .orderByChild("accType")
+            .equalTo(1)
+            .once("value");
 
-    let van_snap = await DB.ref("Users")
-      .orderByChild("accType")
-      .equalTo(0)
-      .once("value");
+          let van_snap = await DB.ref("Users")
+            .orderByChild("accType")
+            .equalTo(0)
+            .once("value");
 
-    let schoolMap = await Promise.all(
-      _.map(school_snap.val(), async o => {
-        return {
-          id: o.id,
-          name: o.schoolName
-        };
-      })
-    );
+          let schoolMap = await Promise.all(
+            _.map(school_snap.val(), async o => {
+              return {
+                id: o.id,
+                name: o.schoolName
+              };
+            })
+          );
 
-    let vanMap = await Promise.all(
-      _.map(van_snap.val(), async o => {
-        return {
-          id: o.id,
-          name: o.driverName,
-          reg_num: o.regNumber
-        };
-      })
-    );
+          let vanMap = await Promise.all(
+            _.map(van_snap.val(), async o => {
+              return {
+                id: o.id,
+                name: o.driverName,
+                reg_num: o.regNumber
+              };
+            })
+          );
 
-    callback(null, {
-      schools: schoolMap,
-      vans: vanMap
-    });
+          callback(null, {
+            schools: schoolMap,
+            vans: vanMap,
+            update_id: params.id,
+
+            s_id: snap.val().studentId,
+            name: snap.val().name,
+            sel_school: snap.val().schoolId,
+            sel_van: snap.val().vanId,
+            email: snap.val().email,
+            password: snap.val().pass
+          });
+        } else {
+          redirect("/students");
+        }
+      });
   },
   data() {
     return {
@@ -102,6 +123,7 @@ export default {
       schools: [],
       vans: [],
 
+      update_id: "",
       s_id: "",
       name: "",
       sel_school: "",
@@ -130,7 +152,8 @@ export default {
     sel_van: value => {
       return Validator.value(value).required();
     },
-    email: value => {
+    email: function(value) {
+      const self = this;
       return Validator.value(value)
         .required()
         .email()
@@ -142,7 +165,12 @@ export default {
                 .orderByChild("email")
                 .equalTo(value)
                 .once("value");
-              if (snap.val() !== null) {
+
+              if (
+                _.find(snap.toJSON(), o => {
+                  return o.id !== self.update_id;
+                })
+              ) {
                 return "Already taken!";
               }
             });
@@ -165,13 +193,11 @@ export default {
       this.$validate().then(function(success) {
         if (success) {
           let pushRef = DB.ref("Users").push();
-          pushRef.set(
+          DB.ref("Users/" + self.update_id).update(
             {
-              accType: 2,
               email: self.email,
-              id: pushRef.key,
               pass: self.password,
-              createdAt: firebase.database.ServerValue.TIMESTAMP,
+              updatedAt: firebase.database.ServerValue.TIMESTAMP,
               name: self.name,
               studentId: self.s_id,
               schoolId: self.sel_school,
@@ -182,8 +208,7 @@ export default {
                 self.form.err = err.message;
                 self.form.loading = false;
               } else {
-                self.resetForm();
-                self.form.suc = "Successfully created student.";
+                self.form.suc = "Successfully updated student.";
                 self.form.loading = false;
                 setTimeout(() => {
                   self.form.suc = "";
@@ -195,20 +220,7 @@ export default {
           self.form.loading = false;
         }
       });
-    },
-    resetForm() {
-      const self = this;
-
-      self.name = "";
-      self.email = "";
-      self.password = "12345678";
-      self.s_id = "";
-      self.sel_school = "";
-      self.sel_van = "";
-
-      self.validation.reset();
     }
   }
 };
 </script>
-

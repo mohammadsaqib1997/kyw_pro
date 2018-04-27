@@ -6,7 +6,7 @@ export default function ({ redirect, route }) {
         let response = await checkAuth()
         if (response !== null) {
             if (typeof checkRoutes(route.name) !== 'undefined') {
-                resolve(redirect('/'))
+                resolve(redirect('/admin'))
             } else {
                 resolve()
             }
@@ -14,7 +14,7 @@ export default function ({ redirect, route }) {
             if (typeof checkRoutes(route.name) !== 'undefined') {
                 resolve()
             } else {
-                resolve(redirect('/login'))
+                resolve(redirect('/admin/login'))
             }
         }
     })
@@ -22,8 +22,8 @@ export default function ({ redirect, route }) {
 
 function checkRoutes(routeName) {
     const notAuthRoutes = [
-        'login',
-        'forgot-password'
+        'admin-login',
+        'admin-forgot-password'
     ]
     return _.find(notAuthRoutes, function (item) {
         return item === routeName

@@ -4,12 +4,12 @@
             //- Breadcrumbs
             ol.breadcrumb
                 li.breadcrumb-item
-                    nuxt-link(to="/") Dashboard
+                    nuxt-link(to="/admin") Dashboard
                 li.breadcrumb-item.active Students
 
             .card
                 .card-header
-                    nuxt-link.btn.btn-sm.btn-primary(to="/students/create")
+                    nuxt-link.btn.btn-sm.btn-primary(to="/admin/students/create")
                         | Create Student
                 .card-body.px-0
                     .table-responsive
@@ -33,7 +33,7 @@
                                         td {{ item.email }}
                                         td {{ item.studentId }}
                                         td
-                                          nuxt-link.btn.btn-sm.btn-primary.text-white(v-bind:to="'/students/update/'+item.id")
+                                          nuxt-link.btn.btn-sm.btn-primary.text-white(v-bind:to="'/admin/students/update/'+item.id")
                                             i.fa.fa-edit
 
 
@@ -53,7 +53,7 @@ export default {
       loginData: "userData"
     })
   },
-  created() {
+  mounted() {
     const self = this;
     DB.ref("Users")
       .orderByChild("accType")

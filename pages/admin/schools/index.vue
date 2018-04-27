@@ -4,36 +4,36 @@
             //- Breadcrumbs
             ol.breadcrumb
                 li.breadcrumb-item
-                    nuxt-link(to="/") Dashboard
-                li.breadcrumb-item.active Drivers
+                    nuxt-link(to="/admin") Dashboard
+                li.breadcrumb-item.active Schools
 
             .card
                 .card-header
-                    nuxt-link.btn.btn-sm.btn-primary(to="/drivers/create")
-                        | Create Driver
+                    nuxt-link.btn.btn-sm.btn-primary(to="/admin/schools/create")
+                        | Create School
                 .card-body.px-0
                     .table-responsive
-                        .text-center.my-2(v-if='fetch.drivers.loading')
+                        .text-center.my-2(v-if='fetch.schools.loading')
                             i.fa.fa-refresh.fa-spin.fa-3x.fa-fw
-                        h3.text-center.my-2(v-if='!fetch.drivers.loading && fetch.drivers.data.length === 0')
+                        h3.text-center.my-2(v-if='!fetch.schools.loading && fetch.schools.data.length === 0')
                             | No Data Found!
-                        template(v-if='!fetch.drivers.loading && fetch.drivers.data.length > 0')
+                        template(v-if='!fetch.schools.loading && fetch.schools.data.length > 0')
                             table_comp(v-bind:per_page="10" classes="table-sm")
                                 template(slot="thead")
                                     tr
                                         th S.No#
-                                        th Name
+                                        th School Name
                                         th Email
-                                        th Registration Number
+                                        th School Address
                                         th Actions
                                 template(slot="tbody")
-                                    tr(v-for="(item, ind) in fetch.drivers.data")
+                                    tr(v-for="(item, ind) in fetch.schools.data")
                                         td {{ ind+1 }}
-                                        td {{ item.driverName }}
+                                        td {{ item.schoolName }}
                                         td {{ item.email }}
-                                        td {{ item.regNumber }}
+                                        td {{ item.schoolAddress }}
                                         td
-                                            nuxt-link.btn.btn-sm.btn-primary(:to="'/drivers/update/'+item.id")
+                                            nuxt-link.btn.btn-sm.btn-primary(:to="'/admin/schools/update/'+item.id")
                                                 i.fa.fa-edit
 
 
@@ -42,6 +42,7 @@
 <script>
 import { DB } from "~/services/fireinit.js";
 import tableComp from "~/components/table_comp.vue";
+import _ from "lodash";
 export default {
   middleware: "accTypeRestrict",
   components: {
@@ -51,16 +52,16 @@ export default {
     const self = this;
     DB.ref("Users")
       .orderByChild("accType")
-      .equalTo(0)
+      .equalTo(1)
       .once("value", function(snap) {
-        self.fetch.drivers.data = _.values(snap.val());
-        self.fetch.drivers.loading = false;
+        self.fetch.schools.data = _.reverse(_.values(snap.val()));
+        self.fetch.schools.loading = false;
       });
   },
   data() {
     return {
       fetch: {
-        drivers: {
+        schools: {
           loading: true,
           data: []
         }

@@ -11,13 +11,11 @@
                         input.form-control(type="email" aria-describedby="emailHelp" placeholder="Enter email address")
                     button.btn.btn-primary.btn-block(type="submit") Reset Password
                 .text-center
-                    nuxt-link.d-block.small.mt-3(to="/login") Login Page
+                    nuxt-link.d-block.small.mt-3(to="/admin/login") Login Page
 
 
 </template>
 
 <script>
-export default {
-    layout: 'login_layout'
-}
+export default {};
 </script>

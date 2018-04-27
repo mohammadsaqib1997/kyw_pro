@@ -21,7 +21,7 @@
                     button.btn.btn-primary.btn-block(type="button" v-else disabled)
                       i.fa.fa-refresh.fa-spin
                 .text-center
-                    nuxt-link.d-block.small.mt-3(to="/forgot-password") Forgot Password?
+                    nuxt-link.d-block.small.mt-3(to="/admin/forgot-password") Forgot Password?
 
 
 </template>
@@ -52,7 +52,7 @@ export default {
           .signInWithEmailAndPassword(self.email, self.password)
           .then(() => {
             self.form.loading = false;
-            self.$router.push("/");
+            self.$router.push("/admin");
           })
           .catch(function(error) {
             var errorCode = error.code;
